@@ -59,16 +59,16 @@ int main() {
         tus = getch();
 
         switch (tus) {
-            case 'w':
+            case 's':
                 kaydirma(bos_satir - 1, bos_sutun);
                 break;
-            case 's':
+            case 'w':
                 kaydirma(bos_satir + 1, bos_sutun);
                 break;
-            case 'a':
+            case 'd':
                 kaydirma(bos_satir, bos_sutun - 1);
                 break;
-            case 'd':
+            case 'a':
                 kaydirma(bos_satir, bos_sutun + 1);
                 break;
         }
