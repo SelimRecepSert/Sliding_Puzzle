@@ -43,14 +43,34 @@ void kaydirma(int yeni_satir,int yeni_sutun)
             sayi_tablosu[yeni_satir][yeni_sutun] = 0;
             sayi_tablosu[bos_satir][bos_sutun] = gecici;
 
-            // Boşluğun yeni yerini güncelle
             bos_satir = yeni_satir;
             bos_sutun = yeni_sutun;
     }
 }
 
+
+void karistir() {
+    
+    for(int i = 0; i < 1000; i++) { 
+        int yon = rand() % 4; 
+        
+        switch(yon) {
+            case 0: kaydirma(bos_satir - 1, bos_sutun); break;
+            case 1: kaydirma(bos_satir + 1, bos_sutun); break;
+            case 2: kaydirma(bos_satir, bos_sutun - 1); break;
+            case 3: kaydirma(bos_satir, bos_sutun + 1); break;
+        }
+    }
+}
+
+
 int main() {
     char tus;
+
+    
+    srand(time(NULL));
+    karistir();
+    
 
     while (1)
     {
