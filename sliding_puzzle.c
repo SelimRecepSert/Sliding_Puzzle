@@ -54,6 +54,7 @@ int main() {
 
     while (1)
     {
+    	system("cls");
         tablo();
 
         tus = getch();
