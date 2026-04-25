@@ -1,0 +1,5 @@
+selim 83.00
+selim2 65.00
+selim3 22.00
+selim4 96.00
+selim5 60.00

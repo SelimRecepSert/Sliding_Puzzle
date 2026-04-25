@@ -3,8 +3,15 @@
 #include <time.h>
 #include <conio.h>
 #include <windows.h>
+#include <string.h>
 
 #define size 3
+
+typedef struct {
+    char isim[30];
+    double sure;
+} Kayit;
+
 int sayi_tablosu[size][size]=
 {   
     {1,2,3},
@@ -66,7 +73,6 @@ void tablo()
             else {
                
                 int olmasi_gereken = (i * size) + j + 1;
-
                 
                 if (sayi_tablosu[i][j] == olmasi_gereken) {
                     renk_ayarla(10); 
@@ -106,7 +112,6 @@ void kaydirma(int yeni_satir,int yeni_sutun)
     }
 }
 
-
 void karistir() {
     int son_yon = -1; 
     int i = 0;
@@ -132,10 +137,70 @@ void karistir() {
     }
 }
 
+void skor(char isim[],double gecen_sure)
+{
+
+    FILE *dosya = fopen("skorlar.txt", "a");
+
+    if (dosya != NULL) {
+    
+        fprintf(dosya, "%s %.2f\n", isim, gecen_sure);
+    
+        fclose(dosya);
+        printf("Skorunuz basariyla kaydedildi!\n");
+    }
+    else {
+        printf("Skor dosyasi acilamadi!\n");
+    }
+}
+
+void skor_tablosu()
+{
+
+    FILE *dosya = fopen("skorlar.txt", "r");
+
+    if (dosya == NULL) {
+        printf("Skor tablosu henuz olusturulmamis.\n");
+        return; // Dosya yoksa fonksiyondan çık
+    }
+
+    Kayit tablo[100];
+    int toplam = 0;
+
+    while (fscanf(dosya, "%s %lf", tablo[toplam].isim, &tablo[toplam].sure) != EOF) {
+        toplam++;
+        if (toplam >= 100) break; // Dizi sınırını aşmamak için
+    }
+    fclose(dosya);
+
+
+    for (int i = 0; i < toplam - 1; i++) {
+        for (int j = 0; j < toplam - i - 1; j++) {
+            if (tablo[j].sure > tablo[j+1].sure) { 
+                Kayit gecici = tablo[j];
+                tablo[j] = tablo[j+1];
+                tablo[j+1] = gecici;
+            }
+        }
+    }
+
+    printf("\n===== EN IYI 5 SURE ======\n");
+    for (int i = 0; i < 5 && i < toplam; i++) {
+        // %-10s ismi sola yaslar, %.2f süreyi virgülden sonra 2 hane ile gösterir
+        printf("%d. %-10s : %.2f saniye\n", i + 1, tablo[i].isim, tablo[i].sure);
+    }
+    printf("===========================\n\n");
+}
+
 
 int main() {
     char tus;
+    char isim[30];
 
+    printf("\nIsminizi giriniz: ");
+    gets(isim);
+
+    system("cls");
     
     srand(time(NULL));
     karistir();
@@ -147,16 +212,18 @@ int main() {
     	imleci_basa_al();	
         tablo();
 
-         if (kazandimi()) {
+        if (kazandimi()) {
             printf("\n"); 
             renk_ayarla(10); 
             printf("*** TEBRIKLER! OYUNU KAZANDINIZ! ***\n");
             renk_ayarla(7);  
 
-                time_t bitis = time(NULL);
-                double gecen_sure =difftime(bitis, baslangic);
+            time_t bitis = time(NULL);
+            double gecen_sure =difftime(bitis, baslangic);
 
-                printf("Cozum %.2f sn surdu.\n",gecen_sure);
+            printf("Cozum %.2f sn surdu.\n",gecen_sure);
+            skor(isim,gecen_sure);
+            skor_tablosu();
 
             printf("Cikmak icin bir tusa basin...");
             getch();
@@ -187,7 +254,5 @@ int main() {
         }
     }
     
-
-
     return 0;
 }
