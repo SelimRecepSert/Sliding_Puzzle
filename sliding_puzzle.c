@@ -139,7 +139,8 @@ int main() {
     
     srand(time(NULL));
     karistir();
-    
+
+    time_t baslangic = time(NULL);
 
     while (1)
     {
@@ -151,7 +152,12 @@ int main() {
             renk_ayarla(10); 
             printf("*** TEBRIKLER! OYUNU KAZANDINIZ! ***\n");
             renk_ayarla(7);  
-            
+
+                time_t bitis = time(NULL);
+                double gecen_sure =difftime(bitis, baslangic);
+
+                printf("Cozum %.2f sn surdu.\n",gecen_sure);
+
             printf("Cikmak icin bir tusa basin...");
             getch();
             return 0; 
@@ -180,6 +186,8 @@ int main() {
                 break;
         }
     }
+    
+
 
     return 0;
 }
