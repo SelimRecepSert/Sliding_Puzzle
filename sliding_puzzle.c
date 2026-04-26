@@ -7,11 +7,13 @@
 
 #define size 3
 
+// Skor tablosu icin verileri tutan yapi:
 typedef struct {
     char isim[30];
     double sure;
 } Kayit;
 
+//Baslangic durumunu tutan matris:
 int sayi_tablosu[size][size]=
 {   
     {1,2,3},
@@ -19,12 +21,13 @@ int sayi_tablosu[size][size]=
     {7,8,0 }
 };
 
+// Konsoldaki metin rengini degistiren fonksiyon:
 void renk_ayarla(int renk_kodu) {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     SetConsoleTextAttribute(hConsole, renk_kodu);
 }
 
-
+// Oyunun kazanma durumunu kontrol eden fonksiyon:
 int kazandimi() {
     int dogru_sayi = 1;
     for (int i = 0; i < size; i++) {
@@ -45,14 +48,14 @@ int kazandimi() {
     return 1;
 }
 
-
+// Ekrani temizlemeden imleci basa tasiyan fonksiyon:
 void imleci_basa_al() {
     HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
     COORD coord = {0, 0};
     SetConsoleCursorPosition(hOut, coord);
 }
 
-
+// Oyun tablosunu ekrana cizen fonksiyon:
 void tablo()
 {
     imleci_basa_al(); 
@@ -74,6 +77,7 @@ void tablo()
                
                 int olmasi_gereken = (i * size) + j + 1;
                 
+                // Sayi dogru yerindeyse yesil renkte yazılır:
                 if (sayi_tablosu[i][j] == olmasi_gereken) {
                     renk_ayarla(10); 
                     printf("%d", sayi_tablosu[i][j]);
@@ -96,8 +100,10 @@ void tablo()
     printf("\n  Cikis icin 'Q' tusuna basiniz.\n");
 }
 
-    int bos_satir=2;
-    int bos_sutun=2;
+    int bos_satir=2; // Boslugun baslangictaki satir indeksi
+    int bos_sutun=2; // Boslugun baslangictaki sutun indeksi
+
+// Secilen yone gore bosluk ile sayiyi yer degistiren fonksiyon:
 void kaydirma(int yeni_satir,int yeni_sutun)
 {
     
@@ -112,6 +118,7 @@ void kaydirma(int yeni_satir,int yeni_sutun)
     }
 }
 
+// Oyun baslamadan once tabloyu rastgele hamlelerle karistiran fonksiyon:
 void karistir() {
     int son_yon = -1; 
     int i = 0;
@@ -120,6 +127,7 @@ void karistir() {
     
         int yon = rand() % 4; 
         
+        // Ayni hamleyi geri almayi onle (ornek: saga kayip hemen sola kayma)
         if ((son_yon == 0 && yon == 1) || (son_yon == 1 && yon == 0) ||
             (son_yon == 2 && yon == 3) || (son_yon == 3 && yon == 2)) {
             continue; 
@@ -137,6 +145,7 @@ void karistir() {
     }
 }
 
+// Oyun bittiginde oyuncunun ismini ve suresini dosyaya kaydeden fonksiyon:
 void skor(char isim[],double gecen_sure)
 {
 
@@ -154,6 +163,7 @@ void skor(char isim[],double gecen_sure)
     }
 }
 
+// Skorlari dosyadan okuyup siralayan ve en iyi 5'i listeleyen fonksiyon:
 void skor_tablosu()
 {
 
@@ -167,13 +177,14 @@ void skor_tablosu()
     Kayit tablo[100];
     int toplam = 0;
 
+    // Dosyadaki kayitlari diziye aktar
     while (fscanf(dosya, "%s %lf", tablo[toplam].isim, &tablo[toplam].sure) != EOF) {
         toplam++;
         if (toplam >= 100) break; // Dizi sınırını aşmamak için
     }
     fclose(dosya);
 
-
+    //Sureleri siralayan kisim:
     for (int i = 0; i < toplam - 1; i++) {
         for (int j = 0; j < toplam - i - 1; j++) {
             if (tablo[j].sure > tablo[j+1].sure) { 
@@ -192,7 +203,6 @@ void skor_tablosu()
     printf("===========================\n\n");
 }
 
-
 int main() {
     char tus;
     char isim[30];
@@ -201,27 +211,32 @@ int main() {
     gets(isim);
 
     system("cls");
-    
+    // Rastgelelik icin zaman tohumu (seed) ayarla ve tabloyu karistir
     srand(time(NULL));
     karistir();
-
+    // Sureyi baslat
     time_t baslangic = time(NULL);
 
+    // Ana oyun dongusu:
     while (1)
     {
     	imleci_basa_al();	
         tablo();
 
+        // Kazanma durumu kontrolu
         if (kazandimi()) {
             printf("\n"); 
             renk_ayarla(10); 
             printf("*** TEBRIKLER! OYUNU KAZANDINIZ! ***\n");
             renk_ayarla(7);  
 
+            // Gecen suresi hesapla
             time_t bitis = time(NULL);
             double gecen_sure =difftime(bitis, baslangic);
 
             printf("Cozum %.2f sn surdu.\n",gecen_sure);
+            
+            // Skoru kaydet ve tabloyu goster:
             skor(isim,gecen_sure);
             skor_tablosu();
 
@@ -231,7 +246,8 @@ int main() {
         }
 
         tus = getch();
-
+        
+        // Girilen tusa gore boslugu kaydir
         switch (tus) {
             case 'q': case 'Q':
                 return 0;
